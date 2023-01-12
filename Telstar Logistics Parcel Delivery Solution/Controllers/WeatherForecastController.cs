@@ -28,7 +28,7 @@ namespace Telstar_Logistics_Parcel_Delivery_Solution.Controllers
         }
 
         [HttpGet(Name = "GetWeatherForecast")]
-        public IEnumerable<Category> Get()
+        public IEnumerable<WeatherForecast> Get()
         {
         
        
@@ -83,8 +83,6 @@ namespace Telstar_Logistics_Parcel_Delivery_Solution.Controllers
                 Summary = Summaries[Random.Shared.Next(Summaries.Length)]
             })
             .ToArray();
-           
-            return _context.Category;
         }
     }
 }
