@@ -10,15 +10,31 @@ namespace Telstar_Logistics_Parcel_Delivery_Solution.Controllers
     {
         private const double maxWeight = 40.0;
 
-        /*[HttpPost(Name = "/integration/india")]
+        [HttpPost]
+        [Route("/integration/india")]
         public ActionResult PostIndia([FromBody] ExternalOrderRequestDto externalOrder)
         {
             var client = new EastIndiaRestClient();
-            Task<ExternalOrderResponseDto> response = client.PostOrderInformationAsync(createRequestDto());
-            ExternalOrderResponseDto orderResponse = JsonConvert.DeserializeObject<ExternalOrderResponseDto>(response);
+            var response = client.Post(externalOrder);
+            if(response == null)
+            {
+                return BadRequest(new ErrorResponseDto("East India has rejected our request"));
+            }
+            return Ok(response);
+        }
 
-            return 
-        }*/
+        [HttpPost]
+        [Route("/integration/oceanic")]
+        public ActionResult PostOceanic([FromBody] ExternalOrderRequestDto externalOrder)
+        {
+            var client = new OceanicRestClient();
+            var response = client.Post(externalOrder);
+            if (response == null)
+            {
+                return BadRequest(new ErrorResponseDto("Oceanic has rejected our request"));
+            }
+            return Ok(response);
+        }
 
         [HttpPost]
         [Route("/information/order")]
@@ -42,6 +58,7 @@ namespace Telstar_Logistics_Parcel_Delivery_Solution.Controllers
             if (!IsNumber(externalOrderDto.weight)) { return false; }
             double weight_double = double.Parse(externalOrderDto.weight);
             if (weight_double > maxWeight) { return false; }
+            if (externalOrderDto.categories.Contains("weapon")) { return false; }
 
 
             /*List<string> destination_list = new List<string> { "Dest_1", "Dest_2" };
@@ -73,7 +90,10 @@ namespace Telstar_Logistics_Parcel_Delivery_Solution.Controllers
         private ExternalOrderRequestDto createRequestDto()
         {
             DimensionsDto dimensions = new DimensionsDto("20", "20", "20");
-            ExternalOrderRequestDto externalOrderRequestDto = new ExternalOrderRequestDto("Tripoli", "Tunis", "2022-01-01", dimensions, "40", "Standard");
+            List<String> list_categories = new List<String>();
+            list_categories.Add("Fragile");
+            list_categories.Add("Cooled");
+            ExternalOrderRequestDto externalOrderRequestDto = new ExternalOrderRequestDto("Tripoli", "Tunis", "2022-01-01", dimensions, "40", list_categories);
             return externalOrderRequestDto;
         }
     }
