@@ -1,4 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
+using System.ComponentModel;
+using Telstar_Logistics_Parcel_Delivery_Solution.Data;
+using Telstar_Logistics_Parcel_Delivery_Solution.Models;
 
 namespace Telstar_Logistics_Parcel_Delivery_Solution.Controllers
 {
@@ -10,24 +13,21 @@ namespace Telstar_Logistics_Parcel_Delivery_Solution.Controllers
         {
         "a", "b", "c", "Cool", "d", "e", "Balmy", "Hot", "Sweltering", "Scorching"
     };
-
+        private readonly ApplicationDbContext _context;
         private readonly ILogger<WeatherForecastController> _logger;
 
-        public WeatherForecastController(ILogger<WeatherForecastController> logger)
+        public WeatherForecastController(ILogger<WeatherForecastController> logger, ApplicationDbContext context)
         {
             _logger = logger;
+            _context = context;
         }
 
         [HttpGet(Name = "GetWeatherForecast")]
-        public IEnumerable<WeatherForecast> Get()
+        public IEnumerable<Category> Get()
         {
-            return Enumerable.Range(1, 5).Select(index => new WeatherForecast
-            {
-                Date = DateTime.Now.AddDays(index),
-                TemperatureC = Random.Shared.Next(-20, 55),
-                Summary = Summaries[Random.Shared.Next(Summaries.Length)]
-            })
-            .ToArray();
+           
+           
+            return _context.Category;
         }
     }
 }
