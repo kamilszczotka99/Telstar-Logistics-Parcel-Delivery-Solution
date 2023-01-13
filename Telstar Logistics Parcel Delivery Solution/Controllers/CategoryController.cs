@@ -6,7 +6,6 @@ namespace Telstar_Logistics_Parcel_Delivery_Solution.Controllers;
 
 
 [ApiController]
-[Route("")]
 public class CategoryController : Controller
 {
     private ApplicationDbContext applicationDbContext;
@@ -14,10 +13,10 @@ public class CategoryController : Controller
     private List<Category> categories;
     public CategoryController(ApplicationDbContext applicationDbContext)
     {
-        categories = applicationDbContext.Category.ToList();
+        categories = applicationDbContext.Categories.ToList();
     }
-    
-    // GET
+
+    [HttpGet]
     [Route("/categories")]
     public ActionResult GetCities()
     {
