@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Models;
 using Telstar_Logistics_Parcel_Delivery_Solution.Data;
 using Telstar_Logistics_Parcel_Delivery_Solution.Models;
 
@@ -49,7 +50,7 @@ public class PriceServiceImpl: PriceService
         return distance;
     }
 
-    public double CalculatePrice(Parcel parcel, List<int> route)
+    public double CalculatePrice(ParcelRequestDTO parcel, List<int> route)
     {
         
         // returns random integers >= 10 and < 20
@@ -83,15 +84,7 @@ public class PriceServiceImpl: PriceService
                 }
             }
         }
-        
-        
-        
 
-        if (parcel.Signature == true)
-        {
-            price += 10;
-        }
-        
         if (parcel.Category.Equals("Refrigerated goods"))
         {
             price *= 1.1;
@@ -109,7 +102,7 @@ public class PriceServiceImpl: PriceService
         }
 
         
-        if (parcel.Signature == true)
+        if (parcel.Signature)
         {
             price += 10;
         }

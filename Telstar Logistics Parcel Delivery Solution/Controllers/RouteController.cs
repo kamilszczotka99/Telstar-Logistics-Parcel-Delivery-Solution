@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Models;
 using Telstar_Logistics_Parcel_Delivery_Solution.Calculations;
 using Telstar_Logistics_Parcel_Delivery_Solution.Data;
 using Telstar_Logistics_Parcel_Delivery_Solution.Models;
@@ -13,29 +14,40 @@ namespace Telstar_Logistics_Parcel_Delivery_Solution.Controllers
     {
         private readonly ApplicationDbContext _context;
         private RouteMapperService _service;
+        private PriceService _priceService;
 
-        public RouteRequestDtoController(ApplicationDbContext context, RouteMapperService service)
+        public RouteRequestDtoController(ApplicationDbContext context, RouteMapperService service, PriceService priceService)
         {
             _context = context;
             _service = service;
+            _priceService = priceService;
         }
-
+        
         // GET: api/Session
-        [HttpGet]
-        public List<string> ExecuteRouteRequest(String startLocation, String endDestination, String? transitLocation, bool? isSignatureChecked)
+        [HttpPost]
+        public RouteResponseDTO ExecuteRouteRequest([FromBody]RouteRequestDto routeRequestDto)
         {
+            if (routeRequestDto.parcel.Category.Equals("Weapon"))
+            {
+                RouteResponseDTO responseDto =
+                    new RouteResponseDTO(new List<string>(), 0,
+                        0);
+                return responseDto;
+            }
+
+            bool isSignatureChecked = routeRequestDto.parcel.Signature;
             bool isTelstarRoutesOnly = isSignatureChecked == null ? true : (bool)isSignatureChecked;
             if (!isTelstarRoutesOnly) // Remove this if statement when city map is updated to none TelstarRoutes.
             {
                 isTelstarRoutesOnly = true;
             }
 
-            if (startLocation != null && endDestination != null && transitLocation != null)
+            if (routeRequestDto.startLocation != null && routeRequestDto.endDestination != null && routeRequestDto.transitLocation != null)
             {
                 List<(int, int, int)> filteredEdges = GetCityMap(isTelstarRoutesOnly);
 
-                List<int> pathToTransit = _service.Execute(filteredEdges, GetLocationId(startLocation), GetLocationId(transitLocation));
-                List<int> pathToEnd = _service.Execute(filteredEdges, GetLocationId(transitLocation), GetLocationId(endDestination));
+                List<int> pathToTransit = _service.Execute(filteredEdges, GetLocationId(routeRequestDto.startLocation), GetLocationId(routeRequestDto.transitLocation));
+                List<int> pathToEnd = _service.Execute(filteredEdges, GetLocationId(routeRequestDto.transitLocation), GetLocationId(routeRequestDto.endDestination));
 
                 pathToEnd.RemoveAt(0);
                 List<int> path = pathToTransit.Concat(pathToEnd).ToList();
@@ -44,26 +56,34 @@ namespace Telstar_Logistics_Parcel_Delivery_Solution.Controllers
                 route = path
                     .Join(_context.CITY, id => id, city => city.ID, (id, city) => city.CityName)
                     .ToList();
-
-                return route;
+                RouteResponseDTO responseDto =
+                    new RouteResponseDTO(route, _priceService.CalculatePrice(routeRequestDto.parcel, path),
+                        _priceService.CalculateDuration(path));
+                return responseDto;
             }
-            else if (startLocation != null && endDestination != null)
+            else if (routeRequestDto.startLocation != null && routeRequestDto.endDestination != null)
             {
                 List<(int, int, int)> filteredEdges = GetCityMap(isTelstarRoutesOnly);
                 List<int> path = new List<int>();
 
-                path = _service.Execute(filteredEdges, GetLocationId(startLocation), GetLocationId(endDestination));
+                path = _service.Execute(filteredEdges, GetLocationId(routeRequestDto.startLocation), GetLocationId(routeRequestDto.endDestination));
 
                 List<String> route = new List<String>();
                 route = path
                     .Join(_context.CITY, id => id, city => city.ID, (id, city) => city.CityName)
                     .ToList();
 
-                return route;
+                RouteResponseDTO responseDto =
+                    new RouteResponseDTO(route, _priceService.CalculatePrice(routeRequestDto.parcel, path),
+                        _priceService.CalculateDuration(path));
+                return responseDto;
             }
             else
             {
-                return new List<string>();
+                RouteResponseDTO responseDto =
+                    new RouteResponseDTO(new List<string>(), 0,
+                        0);
+                return responseDto;
             }
         }
 
