@@ -10,7 +10,7 @@ using Telstar_Logistics_Parcel_Delivery_Solution.Models;
 
 namespace Telstar_Logistics_Parcel_Delivery_Solution.Controllers
 {
-    
+
     [ApiController]
     public class SessionController : ControllerBase
     {
@@ -20,18 +20,18 @@ namespace Telstar_Logistics_Parcel_Delivery_Solution.Controllers
         {
             _context = context;
         }
-        [HttpGet]
+        [HttpPost]
         [Route("sessions/checkToken")]
-        public OkObjectResult CheckUserToken(string email, string token)
+        public ActionResult CheckUserToken([FromBody] Session session)
         {
-            var sess = _context.Sessions.FirstOrDefault(x => x.Email == email);
+            var sess = _context.Sessions.FirstOrDefault(x => x.Email == session.Email);
             {
                 if (sess != null)
                 {
-                    if (sess.Token == token)
+                    if (sess.Token == session.Token)
                     {
                         return Ok(200);
-                       
+
                     }
                     else return null;
                 }
@@ -40,21 +40,21 @@ namespace Telstar_Logistics_Parcel_Delivery_Solution.Controllers
 
 
         }
-        [HttpGet]
+        [HttpPost]
         [Route("sessions/checkCredentials")]
-        public string GetUserCredentials(string email, string password)
+        public string GetUserCredentials([FromBody] Account account)
         {
-            var acc = _context.Accounts.FirstOrDefault(x => x.Email == email);
+            var acc = _context.Accounts.FirstOrDefault(x => x.Email == account.Email);
             {
                 if (acc != null)
                 {
-                    if (acc.Password == password)
+                    if (acc.Password == account.Password)
                     {
                         var sess = _context.Sessions.FirstOrDefault(x => x.Email == acc.Email);
                         {
                             if (sess != null)
                             {
-                                return sess.Token;
+                                return "{\"token\":" + "\"" + sess.Token + "\"}";
                             }
                             else
                             {
@@ -67,7 +67,8 @@ namespace Telstar_Logistics_Parcel_Delivery_Solution.Controllers
                                 _context.Add(tmpSess
                                 );
                                 _context.SaveChanges();
-                                return tmpSess.Token;
+                                return "{\"token\":" + "\"" + tmpSess.Token + "\"}";
+
                             }
                         }
                     }
@@ -80,19 +81,19 @@ namespace Telstar_Logistics_Parcel_Delivery_Solution.Controllers
 
         [HttpDelete]
         [Route("sessions/logoutUser")]
-        public OkObjectResult LogoutUser(string email, string token)
+        public ActionResult LogoutUser([FromBody] Session session)
         {
-            var sess = _context.Sessions.FirstOrDefault(x => x.Email == email);
+            var sess = _context.Sessions.FirstOrDefault(x => x.Email == session.Email);
             {
                 if (sess != null)
                 {
-                    if (sess.Token == token)
+                    if (sess.Token == session.Token)
                     {
                         _context.Remove(sess);
-                        
+
                         _context.SaveChanges();
                         return Ok(200);
-                        
+
                     }
                     else return null;
                 }
