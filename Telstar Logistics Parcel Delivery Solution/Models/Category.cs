@@ -9,6 +9,8 @@ namespace Telstar_Logistics_Parcel_Delivery_Solution.Models
     {  
         [MaxLength (255)]
         public string CategoryType { get; set; }
+        [MaxLength(255)]
+        public string NormalizedCategoryType { get; set; }
         public decimal FeePercent { get; set; }
         [MaxLength(255)]
         public decimal AddedFee { get; set; }
