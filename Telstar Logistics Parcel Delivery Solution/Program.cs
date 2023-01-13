@@ -21,9 +21,10 @@ builder.Services.AddCors(options =>
     options.AddDefaultPolicy(
         builder =>
         {
-            builder.WithOrigins("http://localhost:3000") 
+            builder.WithOrigins("http://localhost:3000")
+                    .WithOrigins("https://vercel.com/andreasoksvold/telstar-logistics-parcel-delivery-client")
                    .AllowAnyHeader()
-                   .AllowAnyMethod();
+                   .AllowAnyMethod().AllowAnyOrigin();
         });
 });
 
