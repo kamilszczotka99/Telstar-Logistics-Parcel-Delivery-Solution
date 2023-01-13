@@ -12,13 +12,13 @@ public class OceanicRestClient
 
     public OceanicRestClient()
     {
-        client = new RestClient("https://wa-tl-dk2.azurewebsites.net");
+        client = new RestClient("https://wa-oa-dk2.azurewebsites.net");
     }
 
     public ExternalOrderResponseDto Post(ExternalOrderRequestDto body)
     {
         ExternalOrderResponseDto responseDto = null;
-        var request = new RestRequest("/information/order", Method.Post);
+        var request = new RestRequest("/route/information", Method.Post);
         request.AddHeader("Content-Type", "application/json");
         request.AddJsonBody(body);
         RestResponse response = client.Execute(request);
