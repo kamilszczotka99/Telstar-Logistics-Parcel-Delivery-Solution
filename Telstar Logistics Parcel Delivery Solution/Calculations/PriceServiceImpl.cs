@@ -85,18 +85,18 @@ public class PriceServiceImpl: PriceService
             }
         }
 
-        if (parcel.Category.Equals("Refrigerated goods"))
+        if (parcel.Category.Equals("Refrigerated goods", StringComparison.OrdinalIgnoreCase))
         {
             price *= 1.1;
         }
         
-        if (parcel.Category.Equals("Cautious parcels"))
+        if (parcel.Category.Equals("Cautious parcels", StringComparison.OrdinalIgnoreCase))
         {
             price *= 1.75;
         }
 
         
-        if (parcel.Category.Equals("Live animals"))
+        if (parcel.Category.Equals("Live animals", StringComparison.OrdinalIgnoreCase))
         {
             price *= 1.5;
         }
