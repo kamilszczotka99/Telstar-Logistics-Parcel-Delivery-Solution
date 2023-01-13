@@ -21,4 +21,8 @@
     <Folder Include="Calculations\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Remove="Controllers\CategoryController.cs" />
+  </ItemGroup>
+
 </Project>

@@ -17,6 +17,8 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<RouteMapperService, RouteMapperServiceImpl>();
+builder.Services.AddScoped<PriceService, PriceServiceImpl>();
+
 
 var app = builder.Build();
 
