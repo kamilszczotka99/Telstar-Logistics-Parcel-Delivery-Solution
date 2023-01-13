@@ -10,7 +10,7 @@ using Telstar_Logistics_Parcel_Delivery_Solution.Models;
 
 namespace Telstar_Logistics_Parcel_Delivery_Solution.Controllers
 {
-    [Route("api/[controller]")]
+    
     [ApiController]
     public class SessionController : ControllerBase
     {
@@ -21,150 +21,90 @@ namespace Telstar_Logistics_Parcel_Delivery_Solution.Controllers
             _context = context;
         }
         [HttpGet]
-        public string GetRouteRequest(Account account)
+        [Route("sessions/checkToken")]
+        public OkObjectResult CheckUserToken(string email, string token)
         {
-            var acc = _context.Accounts.FirstOrDefault(x => x.Email == account.Email);
+            var sess = _context.Sessions.FirstOrDefault(x => x.Email == email);
             {
-                if (acc.Password == account.Password)
+                if (sess != null)
                 {
-                    var sess = _context.Sessions.FirstOrDefault(x => x.Email == acc.Email);
+                    if (sess.Token == token)
                     {
-                        if (sess.Token.Length>0)
-                        {
-                            return sess.Token;
-                        }
-                        else
-                        {
-                            var tmpSess =
-                            new Session
-
-                            {
-                                Email = acc.Email,
-                                Token = "aasada"
-
-                            };
-                            _context.Add(tmpSess
-                           
-                            );
-                            _context.SaveChanges();
-                            return tmpSess.Token;
-                        }
+                        return Ok(200);
                        
                     }
-                    
+                    else return null;
                 }
-                else return "wrong pass";
-
+                else return null;
             }
 
 
 
-            //var account = _context.Accounts.FirstOrDefault(x => x.Email == email);
-            //if (account.Password == _)
-            //{
 
-            //}
-            //return await _context.Sessions.ToListAsync();
 
-            //        // GET: api/Session
-            //        [HttpGet]
-            //        public async Task<ActionResult<IEnumerable<Session>>> GetSession()
-            //        {
-            //            return await _context.Sessions.ToListAsync();
-            //        }
+        }
+        [HttpGet]
+        [Route("sessions/checkCredentials")]
+        public string GetUserCredentials(string email, string password)
+        {
+            var acc = _context.Accounts.FirstOrDefault(x => x.Email == email);
+            {
+                if (acc != null)
+                {
+                    if (acc.Password == password)
+                    {
+                        var sess = _context.Sessions.FirstOrDefault(x => x.Email == acc.Email);
+                        {
+                            if (sess != null)
+                            {
+                                return sess.Token;
+                            }
+                            else
+                            {
+                                var tmpSess =
+                                new Session
+                                {
+                                    Email = acc.Email,
+                                    Token = System.Guid.NewGuid().ToString()
+                                };
+                                _context.Add(tmpSess
+                                );
+                                _context.SaveChanges();
+                                return tmpSess.Token;
+                            }
+                        }
+                    }
+                    else return null;
+                }
+                else return null;
+            }
+        }
 
-            //        // GET: api/Session/5
-            //        [HttpGet("{id}")]
-            //        public async Task<ActionResult<Session>> GetSession(string id)
-            //        {
-            //            var session = await _context.Sessions.FindAsync(id);
 
-            //            if (session == null)
-            //            {
-            //                return NotFound();
-            //            }
-
-            //            return session;
-            //        }
-
-            //        // PUT: api/Session/5
-            //        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-            //        [HttpPut("{id}")]
-            //        public async Task<IActionResult> PutSession(string id, Session session)
-            //        {
-            //            if (id != session.Token)
-            //            {
-            //                return BadRequest();
-            //            }
-
-            //            _context.Entry(session).State = EntityState.Modified;
-
-            //            try
-            //            {
-            //                await _context.SaveChangesAsync();
-            //            }
-            //            catch (DbUpdateConcurrencyException)
-            //            {
-            //                if (!SessionExists(id))
-            //                {
-            //                    return NotFound();
-            //                }
-            //                else
-            //                {
-            //                    throw;
-            //                }
-            //            }
-
-            //            return NoContent();
-            //        }
-
-            //        // POST: api/Session
-            //        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-            //        [HttpPost]
-            //        public async Task<ActionResult<Session>> PostSession(Session session)
-            //        {
-            //            _context.Sessions.Add(session);
-            //            try
-            //            {
-            //                await _context.SaveChangesAsync();
-            //            }
-            //            catch (DbUpdateException)
-            //            {
-            //                if (SessionExists(session.Token))
-            //                {
-            //                    return Conflict();
-            //                }
-            //                else
-            //                {
-            //                    throw;
-            //                }
-            //            }
-
-            //            return CreatedAtAction("GetSession", new { id = session.Token }, session);
-            //        }
-
-            //        // DELETE: api/Session/5
-            //        [HttpDelete("{id}")]
-            //        public async Task<IActionResult> DeleteSession(string id)
-            //        {
-            //            var session = await _context.Sessions.FindAsync(id);
-            //            if (session == null)
-            //            {
-            //                return NotFound();
-            //            }
-
-            //            _context.Sessions.Remove(session);
-            //            await _context.SaveChangesAsync();
-
-            //            return NoContent();
-            //        }
-
-            //        private bool SessionExists(string id)
-            //        {
-            //            return _context.Sessions.Any(e => e.Token == id);
-            //        }
+        [HttpDelete]
+        [Route("sessions/logoutUser")]
+        public OkObjectResult LogoutUser(string email, string token)
+        {
+            var sess = _context.Sessions.FirstOrDefault(x => x.Email == email);
+            {
+                if (sess != null)
+                {
+                    if (sess.Token == token)
+                    {
+                        _context.Remove(sess);
+                        
+                        _context.SaveChanges();
+                        return Ok(200);
+                        
+                    }
+                    else return null;
+                }
+                else return null;
+            }
         }
     }
+
+
 }
 
 

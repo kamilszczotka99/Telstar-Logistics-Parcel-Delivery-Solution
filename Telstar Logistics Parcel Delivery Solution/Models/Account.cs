@@ -3,10 +3,11 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Telstar_Logistics_Parcel_Delivery_Solution.Models
 {
+    [Keyless]
     public class Account
     {
-        [Key]
-        public int Id { get; set; }
+        
+        
         [Required]
         public string Email { get; set;}
         [Required]
