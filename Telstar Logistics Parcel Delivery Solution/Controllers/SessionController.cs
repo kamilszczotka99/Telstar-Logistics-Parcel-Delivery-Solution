@@ -5,12 +5,13 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Models;
 using Telstar_Logistics_Parcel_Delivery_Solution.Data;
 using Telstar_Logistics_Parcel_Delivery_Solution.Models;
 
 namespace Telstar_Logistics_Parcel_Delivery_Solution.Controllers
 {
-    
+
     [ApiController]
     public class SessionController : ControllerBase
     {
@@ -20,41 +21,41 @@ namespace Telstar_Logistics_Parcel_Delivery_Solution.Controllers
         {
             _context = context;
         }
-        [HttpGet]
+        [HttpPost]
         [Route("sessions/checkToken")]
-        public OkObjectResult CheckUserToken(string email, string token)
+        public ActionResult CheckUserToken([FromBody] Session session)
         {
-            var sess = _context.Sessions.FirstOrDefault(x => x.Email == email);
+            var sess = _context.Sessions.FirstOrDefault(x => x.Email == session.Email);
             {
                 if (sess != null)
                 {
-                    if (sess.Token == token)
+                    if (sess.Token == session.Token)
                     {
                         return Ok(200);
-                       
+
                     }
-                    else return null;
+                    else return BadRequest(new ErrorResponseDto("This went bad, sorry"));
                 }
-                else return null;
+                else return BadRequest(new ErrorResponseDto("This went bad, sorry"));
             }
 
 
         }
-        [HttpGet]
+        [HttpPost]
         [Route("sessions/checkCredentials")]
-        public string GetUserCredentials(string email, string password)
+        public string GetUserCredentials([FromBody] Account account)
         {
-            var acc = _context.Accounts.FirstOrDefault(x => x.Email == email);
+            var acc = _context.Accounts.FirstOrDefault(x => x.Email == account.Email);
             {
                 if (acc != null)
                 {
-                    if (acc.Password == password)
+                    if (acc.Password == account.Password)
                     {
                         var sess = _context.Sessions.FirstOrDefault(x => x.Email == acc.Email);
                         {
                             if (sess != null)
                             {
-                                return sess.Token;
+                                return "{\"token\":" + "\"" + sess.Token + "\"}";
                             }
                             else
                             {
@@ -67,36 +68,37 @@ namespace Telstar_Logistics_Parcel_Delivery_Solution.Controllers
                                 _context.Add(tmpSess
                                 );
                                 _context.SaveChanges();
-                                return tmpSess.Token;
+                                return "{\"token\":" + "\"" + tmpSess.Token + "\"}";
+
                             }
                         }
                     }
-                    else return null;
+                    else return "{\"status\":" + "\"" + "500" + "\"}";
                 }
-                else return null;
+                else return "{\"status\":" + "\"" + "500" + "\"}";
             }
         }
 
 
         [HttpDelete]
         [Route("sessions/logoutUser")]
-        public OkObjectResult LogoutUser(string email, string token)
+        public ActionResult LogoutUser([FromBody] Session session)
         {
-            var sess = _context.Sessions.FirstOrDefault(x => x.Email == email);
+            var sess = _context.Sessions.FirstOrDefault(x => x.Email == session.Email);
             {
                 if (sess != null)
                 {
-                    if (sess.Token == token)
+                    if (sess.Token == session.Token)
                     {
                         _context.Remove(sess);
-                        
+
                         _context.SaveChanges();
                         return Ok(200);
-                        
+
                     }
-                    else return null;
+                    else return BadRequest(new ErrorResponseDto("This went bad, sorry"));
                 }
-                else return null;
+                else return BadRequest(new ErrorResponseDto("This went bad, sorry"));
             }
         }
     }
