@@ -10,6 +10,7 @@ namespace Telstar_Logistics_Parcel_Delivery_Solution.Data
         public DbSet<Category> Category { get; set; }
         public DbSet<City> CITY { get; set; }
         public DbSet<Edge> Edges { get; set; }
+        public DbSet<Session> Sessions { get; set; }
 
     }
 }
