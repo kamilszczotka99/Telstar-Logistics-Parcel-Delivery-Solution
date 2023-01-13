@@ -9,7 +9,6 @@ namespace Telstar_Logistics_Parcel_Delivery_Solution.Controllers;
 
 
 [ApiController]
-[Route("/cities")]
 public class CitiesController : Controller
 {
     private ApplicationDbContext applicationDbContext;
