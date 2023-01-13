@@ -75,7 +75,6 @@ namespace Telstar_Logistics_Parcel_Delivery_Solution.Controllers
                 //(14, 24, -1)
             };
 
-            service.Execute(cityMap, 11, 6).ForEach(p => Console.WriteLine(p));
             return Enumerable.Range(1, 5).Select(index => new WeatherForecast
             {
                 Date = DateTime.Now.AddDays(index),
