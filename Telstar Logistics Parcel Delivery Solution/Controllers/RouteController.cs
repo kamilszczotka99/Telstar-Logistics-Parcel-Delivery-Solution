@@ -6,6 +6,8 @@ using Models;
 using Telstar_Logistics_Parcel_Delivery_Solution.Calculations;
 using Telstar_Logistics_Parcel_Delivery_Solution.Data;
 using Telstar_Logistics_Parcel_Delivery_Solution.Models;
+using Microsoft.EntityFrameworkCore;
+
 namespace Telstar_Logistics_Parcel_Delivery_Solution.Controllers
 {
     [Route("api/[controller]")]
@@ -27,7 +29,20 @@ namespace Telstar_Logistics_Parcel_Delivery_Solution.Controllers
         [HttpPost]
         public RouteResponseDTO ExecuteRouteRequest([FromBody]RouteRequestDto routeRequestDto)
         {
-            if (routeRequestDto.parcel.Category.Equals("Weapon"))
+            List<string> cityNames = new List<string>();
+            {
+                var cities = _context.CITY.ToList();
+                foreach (var city in cities)
+                {
+                    cityNames.Add(city.CityName);
+                }
+            }
+
+            bool containsStartExists = cityNames.Exists(c => c.Equals(routeRequestDto.startLocation, StringComparison.OrdinalIgnoreCase));
+            bool containsEndExists = cityNames.Exists(c => c.Equals(routeRequestDto.endDestination, StringComparison.OrdinalIgnoreCase));
+            bool containsTransitExists = cityNames.Exists(c => c.Equals(routeRequestDto.transitLocation, StringComparison.OrdinalIgnoreCase));
+
+            if (routeRequestDto.parcel.Category.Equals("Weapon") || routeRequestDto.parcel.Weight > 40)
             {
                 RouteResponseDTO responseDto =
                     new RouteResponseDTO(new List<string>(), 0,
@@ -35,6 +50,7 @@ namespace Telstar_Logistics_Parcel_Delivery_Solution.Controllers
                 return responseDto;
             }
 
+            
             bool isSignatureChecked = routeRequestDto.parcel.Signature;
             bool isTelstarRoutesOnly = isSignatureChecked == null ? true : (bool)isSignatureChecked;
             if (!isTelstarRoutesOnly) // Remove this if statement when city map is updated to none TelstarRoutes.
@@ -42,7 +58,12 @@ namespace Telstar_Logistics_Parcel_Delivery_Solution.Controllers
                 isTelstarRoutesOnly = true;
             }
 
-            if (routeRequestDto.startLocation != null && routeRequestDto.endDestination != null && routeRequestDto.transitLocation != null)
+            if (routeRequestDto.startLocation != null 
+                && containsStartExists
+                && routeRequestDto.endDestination != null 
+                && containsEndExists
+                && routeRequestDto.transitLocation != null
+                && containsTransitExists)
             {
                 List<(int, int, int)> filteredEdges = GetCityMap(isTelstarRoutesOnly);
 
@@ -61,7 +82,10 @@ namespace Telstar_Logistics_Parcel_Delivery_Solution.Controllers
                         _priceService.CalculateDuration(path));
                 return responseDto;
             }
-            else if (routeRequestDto.startLocation != null && routeRequestDto.endDestination != null)
+            else if (routeRequestDto.startLocation != null
+                     && containsStartExists
+                     && routeRequestDto.endDestination != null
+                     && containsEndExists)
             {
                 List<(int, int, int)> filteredEdges = GetCityMap(isTelstarRoutesOnly);
                 List<int> path = new List<int>();
