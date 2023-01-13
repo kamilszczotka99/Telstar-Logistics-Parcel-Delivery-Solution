@@ -39,9 +39,6 @@ namespace Telstar_Logistics_Parcel_Delivery_Solution.Controllers
             }
 
 
-
-
-
         }
         [HttpGet]
         [Route("sessions/checkCredentials")]
