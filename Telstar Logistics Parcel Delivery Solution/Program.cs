@@ -1,6 +1,14 @@
-var builder = WebApplication.CreateBuilder(args);
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Telstar_Logistics_Parcel_Delivery_Solution.Data;
 
-// Add services to the container.
+var builder = WebApplication.CreateBuilder(args);
+builder.Configuration.AddJsonFile("connectionstrings.json", optional: false, reloadOnChange: true);
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+    options.UseSqlServer(connectionString)
+);
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
