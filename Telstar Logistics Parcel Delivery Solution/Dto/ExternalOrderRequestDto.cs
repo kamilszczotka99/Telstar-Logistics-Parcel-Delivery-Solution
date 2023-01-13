@@ -1,21 +1,20 @@
+using Models;
+
 namespace Models
 {
     public class ExternalOrderRequestDto
     {
-        public string start_destination { get; set; }
-        public string stop_destination { get; set; }
-        public string start_destination_arrival { get; set; }
+        public string cityTo { get; set; }
+        public string cityFrom { get; set; }
+        public string deliveryTime { get; set; }
         public DimensionsDto dimensions { get; set; }
         public string weight { get; set; }
-        public string categories { get; set; }
-
-        public ExternalOrderRequestDto(string start_destination, string stop_destination,
-                                       string start_destination_arrival, DimensionsDto dimensions,
-                                       string weight, string categories)
+        public List<String> categories { get; set; }
+        public ExternalOrderRequestDto(string cityTo, string cityFrom, string deliveryTime, DimensionsDto dimensions, string weight, List<String> categories)
         {
-            this.start_destination = start_destination;
-            this.stop_destination = stop_destination;
-            this.start_destination_arrival = start_destination_arrival;
+            this.cityTo = cityTo;
+            this.cityFrom = cityFrom;
+            this.deliveryTime = deliveryTime;
             this.dimensions = dimensions;
             this.weight = weight;
             this.categories = categories;

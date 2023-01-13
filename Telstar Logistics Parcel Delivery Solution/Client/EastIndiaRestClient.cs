@@ -1,25 +1,40 @@
 using Models;
-using Microsoft.AspNetCore.Mvc;
-using System.Net.Http;
 using Newtonsoft.Json;
+using RestSharp;
 
 public class EastIndiaRestClient
 {
-    readonly string url = "http://localhost:9080/order/information";
-    private readonly HttpClient _client;
+    private readonly RestClient client;
+
 
     public EastIndiaRestClient()
     {
-        _client = new HttpClient();
+        client = new RestClient("https://wa-eit-dk2.azurewebsites.net");
     }
-    public async Task<ExternalOrderResponseDto> PostOrderInformationAsync(ExternalOrderRequestDto externalOrderRequestDto)
+
+    public ExternalOrderResponseDto Post(ExternalOrderRequestDto body)
     {
-        var json = JsonConvert.SerializeObject(externalOrderRequestDto);
-        var content = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
-        var response = await _client.PostAsync("http://localhost:9080/order/information", content);
-        var responseContent = await response.Content.ReadAsStringAsync();
-        var orderResponse = JsonConvert.DeserializeObject<ExternalOrderResponseDto>(responseContent);
-        return orderResponse;
+        ExternalOrderResponseDto responseDto = null;
+        var request = new RestRequest("/route/information", Method.Post);
+        request.AddHeader("Content-Type", "application/json");
+        request.AddHeader("Authorization", "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjb21wYW55IjoiVGVsc3RhciJ9.K7Xjj6FEUqtLzRDUcU-5zsnjjW1S-pGw-ngbbbOaocI");
+        request.AddJsonBody(body);
+        RestResponse response = client.Execute(request);
+        try
+        {
+            responseDto = JsonConvert.DeserializeObject<ExternalOrderResponseDto>(response.Content);
+            // use the responseDto object
+        }
+        /*catch (JsonSerializationException ex)
+        {
+            // handle the exception here
+            Console.WriteLine("Error deserializing JSON content: " + ex.Message);
+        }*/
+        catch (System.Net.WebException ex)
+        {
+            Console.WriteLine("East India is not available: " + ex.Message);
+        }
+        return responseDto;
     }
 }
 
