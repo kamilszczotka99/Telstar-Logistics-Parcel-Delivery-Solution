@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Models;
 using Telstar_Logistics_Parcel_Delivery_Solution.Data;
 using Telstar_Logistics_Parcel_Delivery_Solution.Models;
 
@@ -33,9 +34,9 @@ namespace Telstar_Logistics_Parcel_Delivery_Solution.Controllers
                         return Ok(200);
 
                     }
-                    else return null;
+                    else return BadRequest(new ErrorResponseDto("This went bad, sorry"));
                 }
-                else return null;
+                else return BadRequest(new ErrorResponseDto("This went bad, sorry"));
             }
 
 
@@ -72,9 +73,9 @@ namespace Telstar_Logistics_Parcel_Delivery_Solution.Controllers
                             }
                         }
                     }
-                    else return null;
+                    else return "{\"status\":" + "\"" + "500" + "\"}";
                 }
-                else return null;
+                else return "{\"status\":" + "\"" + "500" + "\"}";
             }
         }
 
@@ -95,9 +96,9 @@ namespace Telstar_Logistics_Parcel_Delivery_Solution.Controllers
                         return Ok(200);
 
                     }
-                    else return null;
+                    else return BadRequest(new ErrorResponseDto("This went bad, sorry"));
                 }
-                else return null;
+                else return BadRequest(new ErrorResponseDto("This went bad, sorry"));
             }
         }
     }
