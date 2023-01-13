@@ -25,7 +25,7 @@ public class RouteMapperServiceImpl : RouteMapperService
         foreach (var (source, destination, distance) in cityMap)
         {
             Node sourceNode = nodes.Find(x => x.Id == source && x.Id != null);
-            sourceNode.Edges.Add(new Edge(source, destination, distance));
+            sourceNode.Edges.Add(new EdgesNonDb(source, destination, distance));
         }
 
         List<int> path = Dijkstra.ShortestPath(nodes, start, end);
@@ -44,13 +44,13 @@ public class RouteMapperServiceImpl : RouteMapperService
 
 
 
-class Edge
+class EdgesNonDb
 {
     public int Source { get; set; }
     public int Destination { get; set; }
     public int Distance { get; set; }
 
-    public Edge(int source, int destination, int distance)
+    public EdgesNonDb(int source, int destination, int distance)
     {
         Source = source;
         Destination = destination;
@@ -61,12 +61,12 @@ class Edge
 class Node
 {
     public int Id { get; set; }
-    public List<Edge> Edges { get; set; }
+    public List<EdgesNonDb> Edges { get; set; }
 
     public Node(int id)
     {
         Id = id;
-        Edges = new List<Edge>();
+        Edges = new List<EdgesNonDb>();
     }
 }
 
